@@ -1,0 +1,30 @@
+# Exercise 01 - pgAdmin, a web interface to browse the database.
+#
+# Start ex00 first, then:  docker compose up -d
+# Open http://localhost:8080  (email: admin@admin.com / password: admin)
+# Register a server with -> Host: piscineds_postgres  Port: 5432
+#                           User: mmanouze  Password: mysecretpassword
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:8.11
+    container_name: piscineds_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - piscineds_network
+    restart: unless-stopped
+
+volumes:
+  pgadmin_data:
+    name: piscineds_pgadmin_data
+
+networks:
+  piscineds_network:
+    external: true      # the network created by ex00

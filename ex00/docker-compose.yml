@@ -1,0 +1,32 @@
+# Exercise 00 - PostgreSQL database "piscineds" running in Docker.
+#
+# Start:   docker compose up -d
+# Connect: psql -U mmanouze -d piscineds -h localhost -W   (password: mysecretpassword)
+# Stop:    docker compose down          (data is kept in the volume)
+# Reset:   docker compose down -v       (data is deleted)
+
+services:
+  postgres:
+    image: postgres:16.4-alpine        # pinned version, never "latest"
+    container_name: piscineds_postgres
+    env_file: .env                     # no password written in this file
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"   # only reachable from this computer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data    # data survives restarts
+    networks:
+      - piscineds_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+    name: piscineds_data
+
+networks:
+  piscineds_network:
+    name: piscineds_network

@@ -1,0 +1,5 @@
+# The dataset is too big for git
+customer/
+item/
+*.csv
+*.zip
